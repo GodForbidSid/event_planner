@@ -2,19 +2,8 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-ccss = """
-<style>
-    .stApp {
-        background: linear-gradient(to right, #b721ff, #21d4fd);
-        background-size: cover;
-        background-repeat: no-repeat;
-    }
-</style>
-"""
-st.markdown(ccss, unsafe_allow_html=True)
-
-st.header("Timely")
-st.subheader("Your very own personalized scheduler")
+st.title("Timely")
+st.info("Your very own personalized scheduler")
 
 if 'events' not in st.session_state:
     st.session_state.events = []
@@ -30,6 +19,7 @@ def add_event(name, date, time):
 def delete_event(index):
     if 0 <= index < len(st.session_state.events):
         st.session_state.events.pop(index)
+    st.rerun()
 
 def display_events():
     if st.session_state.events:
@@ -43,19 +33,15 @@ def display_events():
             if col2.button("Delete", key=f"del_{i}"):
                 delete_event(i)
                 st.success(f"Event '{event['name']}' deleted!")
-
-        st.dataframe(events_df)
     else:
         st.write("No events scheduled.")
-
-st.title("Event Scheduler")
 
 now = datetime.now()
 
 with st.form("event_form"):
     name = st.text_input("Event Name")
     date = st.date_input("Event Date", min_value=now.date())
-    time = st.time_input("Event Time", value=datetime.now().time())
+    time = st.time_input("Event Time", now,step=1800)
     submitted = st.form_submit_button("Add Event")
 
     if submitted:
